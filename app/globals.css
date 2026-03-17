@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Abricot brand colors */
+  --primary: #D84315;
+  --primary-light: #E85D04;
+
+  /* Task status colors */
+  --status-todo: #FCA5A5;      /* À faire - light red */
+  --status-in-progress: #FED7AA; /* En cours - light orange */
+  --status-done: #86EFAC;       /* Terminée - light green */
+
+  /* UI colors */
+  --border: #E5E5E5;
+  --input-bg: #F9F9F9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
