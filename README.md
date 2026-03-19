@@ -28,7 +28,7 @@ npm install
 Le backend se trouve [ici](https://github.com/OpenClassrooms-Student-Center/dev-react-P10) 
 
 ```bash
-cd ../project/dev-react-P10
+cd ../dev-react-P10
 npm install
 ```
 
