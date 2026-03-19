@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
+import MultiSelect from '@/components/ui/MultiSelect'
 import { createTask, getProject } from '@/lib/api'
 import Button from '@/components/ui/Button'
 
@@ -129,60 +130,33 @@ export default function CreateTaskModal({ isOpen, onClose, projectId, onSuccess 
           />
         </div>
 
-        <div>
-          <label htmlFor="taskAssignees" className="block text-xs md:text-sm font-medium mb-1 md:mb-2 text-gray-900">Assigné à :</label>
-          <select
-            id="taskAssignees"
-            multiple
-            value={assignees}
-            onChange={(e) => setAssignees(Array.from(e.target.selectedOptions, option => option.value))}
-            className="w-full px-2 md:px-4 py-1 md:py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 text-xs md:text-sm text-gray-900"
-          >
-            {projectMembers.map((member) => (
-              <option key={member.user?.id} value={member.user?.id}>
-                {member.user?.name || member.user?.email}
-              </option>
-            ))}
-          </select>
-          {assignees.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {assignees.map((userId) => {
-                const member = projectMembers.find(m => m.user?.id === userId)
-                return (
-                  <span key={userId} className="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-sm text-gray-900">
-                    {member?.user?.name || 'Utilisateur'}
-                    <button
-                      type="button"
-                      onClick={() => setAssignees(assignees.filter(id => id !== userId))}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )
-              })}
-            </div>
-          )}
-        </div>
+        <MultiSelect
+          label="Assigné à :"
+          placeholder="Choisir un ou plusieurs collaborateurs"
+          options={projectMembers.map(m => m.user)}
+          selectedIds={assignees}
+          onSelect={(id) => setAssignees([...assignees, id])}
+          onRemove={(id) => setAssignees(assignees.filter(a => a !== id))}
+        />
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-900">Statut :</label>
           <div className="flex gap-2">
             {[
-              { value: 'TODO', label: 'À faire', bg: '#FCA5A5' },
-              { value: 'IN_PROGRESS', label: 'En cours', bg: '#FED7AA' },
-              { value: 'DONE', label: 'Terminée', bg: '#86EFAC' }
+              { value: 'TODO', label: 'À faire', bg: '#fecaca', text: '#7f1d1d' },
+              { value: 'IN_PROGRESS', label: 'En cours', bg: '#fef3c7', text: '#78350f' },
+              { value: 'DONE', label: 'Terminée', bg: '#bbf7d0', text: '#065f46' }
             ].map(s => (
               <button
                 key={s.value}
                 type="button"
                 onClick={() => setStatus(s.value)}
-                className={`px-4 py-2 rounded font-medium transition ${
+                className={`px-4 py-2 rounded font-medium transition focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 ${
                   status === s.value
-                    ? 'opacity-100 ring-2 ring-gray-900'
-                    : 'opacity-70 hover:opacity-100'
+                    ? 'ring-2 ring-gray-900'
+                    : 'opacity-80 hover:opacity-100'
                 }`}
-                style={{ backgroundColor: s.bg, color: s.value === 'TODO' ? '#991b1b' : s.value === 'IN_PROGRESS' ? '#92400e' : '#15803d' }}
+                style={{ backgroundColor: s.bg, color: s.text }}
               >
                 {s.label}
               </button>

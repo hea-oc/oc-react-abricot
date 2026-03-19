@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import EditProjectModal from '@/components/features/EditProjectModal'
 import EditTaskModal from '@/components/features/EditTaskModal'
 import CreateTaskModal from '@/components/features/CreateTaskModal'
+import CommentsSection from '@/components/features/CommentsSection'
 
 export default function ProjectDetailPage() {
   const router = useRouter()
@@ -27,7 +28,6 @@ export default function ProjectDetailPage() {
   const [confirmDeleteProject, setConfirmDeleteProject] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState(null)
-  const [expandedComments, setExpandedComments] = useState({})
   const [taskView, setTaskView] = useState('list') // TODO: implémenter la vue calendrier
   const [openMenuTaskId, setOpenMenuTaskId] = useState(null)
 
@@ -106,9 +106,6 @@ export default function ProjectDetailPage() {
     return matchSearch && matchStatus
   })
 
-  const toggleComments = (taskId) => {
-    setExpandedComments(prev => ({ ...prev, [taskId]: !prev[taskId] }))
-  }
 
   const formatDateShort = (dateString) => {
     const date = new Date(dateString)
@@ -141,21 +138,27 @@ export default function ProjectDetailPage() {
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-2">
                 <h1 className="text-xl md:text-3xl font-bold text-gray-900 overflow-wrap-break-word">{project.name}</h1>
-                <button
-                  onClick={() => setEditProjectOpen(true)}
-                  aria-label={`Modifier le projet ${project.name}`}
-                  className="text-sm font-medium text-orange-600 hover:text-orange-700"
-                >
-                  Modifier
-                </button>
-                {user?.id === project?.owner?.id && (
-                  <button
-                    onClick={() => setConfirmDeleteProject(true)}
-                    aria-label={`Supprimer le projet ${project.name}`}
-                    className="text-sm font-medium text-red-600 hover:text-red-700"
-                  >
-                    Supprimer
-                  </button>
+                {user?.id === project?.owner?.id ? (
+                  <>
+                    <button
+                      onClick={() => setEditProjectOpen(true)}
+                      aria-label={`Modifier le projet ${project.name}`}
+                      className="text-sm font-medium text-orange-600 hover:text-orange-700"
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteProject(true)}
+                      aria-label={`Supprimer le projet ${project.name}`}
+                      className="text-sm font-medium text-red-600 hover:text-red-700"
+                    >
+                      Supprimer
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-xs font-medium text-gray-500 italic">
+                    (Propriétaire: {project.owner?.name || 'Propriétaire'})
+                  </span>
                 )}
               </div>
 
@@ -427,29 +430,13 @@ export default function ProjectDetailPage() {
                     </div>
                   )}
                   <hr className="border-t border-gray-200 my-3" />
-                  <button
-                    onClick={() => toggleComments(task.id)}
-                    aria-label={`${expandedComments[task.id] ? 'Masquer' : 'Afficher'} les commentaires pour la tâche ${task.title} (${task.comments ? task.comments.length : task.commentsCount || 0} commentaires)`}
-                    aria-expanded={expandedComments[task.id]}
-                    className="flex items-center justify-between w-full text-xs font-medium text-gray-600 hover:text-gray-900 transition pt-2"
-                  >
-                    <span>Commentaires ({task.comments ? task.comments.length : task.commentsCount || 0})</span>
-                    <span className={`transition-transform text-xs ${expandedComments[task.id] ? 'rotate-180' : ''}`} aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="grey"><path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z"/></svg></span>
-                  </button>
-                  
-                  {expandedComments[task.id] && task.comments && task.comments.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-gray-200 space-y-2">
-                      {task.comments.map((comment) => (
-                        <div key={comment.id} className="bg-gray-50 p-2 rounded text-xs">
-                          <div className="flex justify-between items-start mb-1">
-                            <span className="font-medium text-gray-900">{comment.author?.name || 'Utilisateur'}</span>
-                            <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleDateString('fr-FR')}</span>
-                          </div>
-                          <p className="text-gray-700">{comment.content}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <CommentsSection
+                    taskId={task.id}
+                    projectId={projectId}
+                    comments={task.comments || []}
+                    currentUserId={user?.id}
+                    onCommentAdded={() => loadProject()}
+                  />
                 </div>
 
                 {confirmDeleteId === task.id && (

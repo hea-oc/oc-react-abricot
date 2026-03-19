@@ -107,7 +107,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden md:block w-1/2 bg-gradient-to-br from-orange-100 to-orange-50">
+      <div className="hidden md:block w-1/2 bg-linear-to-br from-orange-100 to-orange-50">
         <img
           src={signinImage.src}
           alt="Workspace"

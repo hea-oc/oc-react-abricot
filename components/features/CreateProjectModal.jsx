@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
+import MultiSelect from '@/components/ui/MultiSelect'
 import { createProject, addContributor, searchUsers, getProfile } from '@/lib/api'
 import Button from '@/components/ui/Button'
 
@@ -26,7 +27,15 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
 
   const handleSearch = async (query) => {
     setSearchQuery(query)
+
+    // Vider les résultats si la recherche est vide
     if (!query.trim()) {
+      setSearchResults([])
+      return
+    }
+
+    // Ne pas appeler l'API si moins de 2 caractères
+    if (query.trim().length < 2) {
       setSearchResults([])
       return
     }
@@ -135,49 +144,19 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
           />
         </div>
 
-        <div>
-          <label htmlFor="createContributorSearch" className="block text-xs md:text-sm font-medium mb-1 md:mb-2 text-gray-900">Contributeurs</label>
-          <input
-            id="createContributorSearch"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Rechercher un utilisateur"
-            className="w-full px-2 md:px-4 py-1 md:py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 text-xs md:text-sm text-gray-900 mb-2"
-          />
-
-          {searchResults.length > 0 && (
-            <div className="border border-gray-300 rounded bg-white max-h-32 md:max-h-40 overflow-y-auto">
-              {searchResults.map((user) => (
-                <button
-                  key={user.id}
-                  type="button"
-                  onClick={() => addContributorToList(user)}
-                  className="w-full text-left px-2 md:px-4 py-1 md:py-2 hover:bg-gray-100 text-xs md:text-sm text-gray-900"
-                >
-                  {user.name || user.email}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {contributors.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {contributors.map((contributor) => (
-                <div key={contributor.id} className="flex items-center justify-between bg-gray-100 p-1 md:p-2 rounded text-xs md:text-sm">
-                  <span className="text-gray-900 truncate">{contributor.name || contributor.email}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeContributor(contributor.id)}
-                    className="text-red-600 hover:text-red-800 text-sm ml-2 shrink-0"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <MultiSelect
+          label="Contributeurs"
+          placeholder="Choisir un ou plusieurs collaborateurs"
+          options={searchResults}
+          selectedIds={contributors.map(c => c.id)}
+          onSearch={handleSearch}
+          onSelect={(id) => {
+            const user = searchResults.find(u => u.id === id)
+            if (user) addContributorToList(user)
+          }}
+          onRemove={removeContributor}
+          showBadges={false}
+        />
 
         <Button
           type="submit"
