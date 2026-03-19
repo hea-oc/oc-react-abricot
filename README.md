@@ -13,7 +13,7 @@ Application web collaborative pour gérer vos projets et tâches en équipe.
 ### 1 - Cloner le projet
 
 ```bash
-git clone 
+git clone https://github.com/hea-oc/oc-react-abricot
 cd abricot
 ```
 
@@ -25,14 +25,14 @@ npm install
 
 ### 3️ - Installer et démarrer le backend
 
-Le backend se trouve dans le dossier `../project/dev-react-P10/`
+Le backend se trouve [ici](https://github.com/OpenClassrooms-Student-Center/dev-react-P10) 
 
 ```bash
 cd ../project/dev-react-P10
 npm install
 ```
 
-Créer un fichier `.env` avec les variables nécessaires (voir [Backend README](../project/dev-react-P10/README.md))
+Créer un fichier `.env` avec les variables nécessaires (voir [Backend README](https://github.com/OpenClassrooms-Student-Center/dev-react-P10))
 
 Démarrer le backend :
 ```bash
@@ -58,7 +58,7 @@ L'app démarre sur `http://localhost:3000`
 Le backend fournit Prisma Studio pour gérer la BD :
 
 ```bash
-cd ../project/dev-react-P10
+cd ../dev-react-P10
 npx prisma studio
 ```
 
@@ -69,7 +69,7 @@ Cela ouvre une interface sur `http://localhost:5555`
 Un script `seed` existe pour initialiser la BD avec des données de test :
 
 ```bash
-cd ../project/dev-react-P10
+cd ../dev-react-P10
 npm run seed
 ```
 
